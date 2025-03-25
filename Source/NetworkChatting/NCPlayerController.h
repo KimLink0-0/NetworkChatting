@@ -13,5 +13,9 @@ UCLASS()
 class NETWORKCHATTING_API ANCPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+
+public:
+	
 	
 };

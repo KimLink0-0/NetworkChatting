@@ -12,6 +12,13 @@
 UCLASS()
 class NETWORKCHATTING_API ANCGameMode : public AGameMode
 {
-	GENERATED_BODY()
-	
+	GENERATED_BODY()	
+
+public:
+	ANCGameMode();
+
+	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
 };
