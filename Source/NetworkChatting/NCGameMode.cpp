@@ -5,6 +5,7 @@
 #include "NCPlayerController.h"
 #include "NCGameState.h"
 #include "NCPlayerState.h"
+#include "NetworkChatting.h"
 
 ANCGameMode::ANCGameMode()
 {
@@ -16,24 +17,21 @@ ANCGameMode::ANCGameMode()
 APlayerController* ANCGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal,
 	const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
-	
-	APlayerController* NewController = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
-	if (NewController->IsLocalPlayerController())
-	{
-		NewController->SetName(TEXT("ServerController"));
-	}
-	else
-	{
-		
-	}
-	
-	
-	return NewController;
-}
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 
+	APlayerController* NewPlayerController = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
+	
+	return NewPlayerController; 
+	
+}
 
 void ANCGameMode::PostLogin(APlayerController* NewPlayer)
 {
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 	
 	Super::PostLogin(NewPlayer);
+
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
