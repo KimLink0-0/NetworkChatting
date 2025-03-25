@@ -4,4 +4,8 @@
 #include "NCGameState.h"
 
 
-
+void ANCGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}

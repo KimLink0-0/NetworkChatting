@@ -10,5 +10,8 @@ UCLASS()
 class NETWORKCHATTING_API ANCGameState : public AGameState
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	virtual void BeginPlay() override;
 };

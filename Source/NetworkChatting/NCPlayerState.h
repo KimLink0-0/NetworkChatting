@@ -13,5 +13,23 @@ UCLASS()
 class NETWORKCHATTING_API ANCPlayerState : public APlayerState
 {
 	GENERATED_BODY()
+
+public:
+
+	FString GetUserName() const;
+	void SetUserName(FString NewControllerName);
+	FString GetInitialReadyText() const;
+	void SetInitialReadyText(FString NewInitialReadyText);
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentName, EditDefaultsOnly, BlueprintReadOnly, Category = "MessageState")
+	FString UserName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MessageState")
+	FString InitialReadyText;
+
+	UFUNCTION()
+	void OnRep_CurrentName();
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
 };
