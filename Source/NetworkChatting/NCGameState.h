@@ -12,6 +12,15 @@ class NETWORKCHATTING_API ANCGameState : public AGameState
 	GENERATED_BODY()
 
 public:
+	TArray<FString> GetServerChatLog() const;
+	void AddServerChatLog(const FString& NewChatMessage);
+	void UpdateServerChatLog() const;
 
-	virtual void BeginPlay() override;
+protected:
+	UPROPERTY(ReplicatedUsing = OnRep_ServerChatLog)
+	TArray<FString> ServerChatLog;
+
+	UFUNCTION()
+	void OnRep_ServerChatLog() const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
