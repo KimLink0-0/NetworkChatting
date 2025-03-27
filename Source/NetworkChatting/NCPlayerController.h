@@ -8,7 +8,7 @@
 
 /**
  * 
- */
+*/
 UCLASS()
 class NETWORKCHATTING_API ANCPlayerController : public APlayerController
 {
@@ -25,6 +25,10 @@ public:
 	// RPC 관련
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendMessageToString(const FString& ReceivedMessage);
+	UFUNCTION()
+	void HandleMulticastRPCShowReceivedMessage(const TArray<FString>& ReceivedMessage);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPCShowReceivedMessage(const TArray<FString>& ReceivedMessage);
 
 	// Replication
 	UFUNCTION()
@@ -32,7 +36,7 @@ public:
 
 	//
 	void SendNetworkMessage(const FString& MessageToSend);
-	void HandleAddServerChatLog(const FString& MessageToSend) const;
+	void HandleAddServerChatLog(const FString& MessageToSend);
 	
 protected:
 	// Widget 관련
@@ -51,5 +55,3 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PostNetInit() override;
 };
-
-

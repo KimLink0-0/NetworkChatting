@@ -3,9 +3,6 @@
 
 #include "NCGameState.h"
 
-#include "NCHUDWidget.h"
-#include "NCMessageBoxWidget.h"
-#include "NCPlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "NetworkChatting.h"
 
@@ -19,36 +16,13 @@ void ANCGameState::AddServerChatLog(const FString& NewChatMessage)
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 	
 	ServerChatLog.Add(NewChatMessage);
-	UpdateServerChatLog();
-
-	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
-}
-
-void ANCGameState::UpdateServerChatLog() const
-{
-	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 	
-	auto* PlayerContoller = Cast<ANCPlayerController>(GetWorld()->GetFirstPlayerController());
-	if (PlayerContoller)
-	{
-		auto* NCHUDWidget = Cast<UNCHUDWidget>(PlayerContoller->GetHUDWidget());
-		if (NCHUDWidget)
-		{
-			NCHUDWidget->MessageBoxWidget->UpdateChattingLog(ServerChatLog);
-		}	
-	}
-	else
-	{
-		NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Cast fail NCPlayerController"));
-	}
-
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
 void ANCGameState::OnRep_ServerChatLog() const
 {
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Replicated ChatLog"));
-	UpdateServerChatLog();
 	
 }
 

@@ -1,10 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "NCPlayerController.h"
 
 #include "NCGameState.h"
 #include "NCHUDWidget.h"
+#include "NCMessageBoxWidget.h"
 #include "NetworkChatting.h"
 #include "Net/UnrealNetwork.h"
 
@@ -39,20 +37,26 @@ void ANCPlayerController::SendNetworkMessage(const FString& MessageToSend)
 {
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 
-	
-	ServerRPCSendMessageToString(MessageToSend);
-	
+	if (HasAuthority())
+	{
+		HandleAddServerChatLog(MessageToSend);
+	}
+	else
+	{
+		ServerRPCSendMessageToString(MessageToSend);
+	}
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
-void ANCPlayerController::HandleAddServerChatLog(const FString& MessageToSend) const
+void ANCPlayerController::HandleAddServerChatLog(const FString& MessageToSend)
 {
 	auto* GameState = Cast<ANCGameState>(GetWorld()->GetGameState());
 	if (GameState)
 	{
 		GameState->AddServerChatLog(MessageToSend);
 		TArray<FString> ReceivedMessage = GameState->GetServerChatLog();
+		HandleMulticastRPCShowReceivedMessage(ReceivedMessage);
 	}
 }
 
@@ -62,6 +66,31 @@ void ANCPlayerController::ServerRPCSendMessageToString_Implementation(const FStr
 	
 	HandleAddServerChatLog(ReceivedMessage);
 
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
+}
+
+void ANCPlayerController::HandleMulticastRPCShowReceivedMessage(const TArray<FString>& ReceivedMessage)
+{
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
+	
+	MulticastRPCShowReceivedMessage(ReceivedMessage);
+
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
+}
+
+
+void ANCPlayerController::MulticastRPCShowReceivedMessage_Implementation(const TArray<FString>& ReceivedMessage)
+{
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
+	auto* NCHUDWidget = Cast<UNCHUDWidget>(HUDWidgetInstance);
+	if (NCHUDWidget)
+	{
+		NCHUDWidget->MessageBoxWidget->UpdateChattingLog(ReceivedMessage);
+	}
+	else
+	{
+		NC_LOG(LogNetworkC, Warning, TEXT("HUDWidgetInstance is null"));
+	}
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -127,5 +156,3 @@ void ANCPlayerController::PostNetInit()
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
-
-
