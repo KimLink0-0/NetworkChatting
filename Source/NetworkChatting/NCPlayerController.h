@@ -33,6 +33,7 @@ public:
 
 	//
 	void SendNetworkMessage(const FString& MessageToSend);
+	void SendNetworkLoginMessage() const;
 	
 protected:
 	// Widget 관련

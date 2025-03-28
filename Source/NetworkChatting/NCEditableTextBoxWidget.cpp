@@ -29,7 +29,7 @@ void UNCEditableTextBoxWidget::SendMessageOnEnter(const FText& MessageFormText, 
 			return;
 		}
 
-		MessageToSend = MessageFormText.ToString();
+		MessageToSend = FString::Printf(TEXT("[%s]:%s"), *PlayerController->GetUserName(), *MessageFormText.ToString());
 		PlayerController->SendNetworkMessage(MessageToSend);
 		ResetWittenMessage();
 	}
@@ -43,7 +43,7 @@ void UNCEditableTextBoxWidget::SendMessageOnClick()
 		return;
 	}
 
-	MessageToSend = SendMessageEditableText->GetText().ToString();
+	MessageToSend = FString::Printf(TEXT("[%s]:%s"), *PlayerController->GetUserName(), *SendMessageEditableText->GetText().ToString());
 	if (!MessageToSend.IsEmpty())
 	{
 		PlayerController->SendNetworkMessage(MessageToSend);
@@ -62,7 +62,8 @@ void UNCEditableTextBoxWidget::NativeConstruct()
 	// 이벤트 바인딩
 	if (SendMessageEditableText)
 	{
-		SendMessageEditableText->SetText(FText::FromString(TEXT("Ready")));
+		// if SetText = Hi, Failed to send login message.
+		SendMessageEditableText->SetText(FText::FromString(TEXT("Hi")));
 		SendMessageEditableText->OnTextCommitted.AddDynamic(this, &UNCEditableTextBoxWidget::SendMessageOnEnter);
 	}
 

@@ -3,9 +3,9 @@
 
 #include "NCPlayerController.h"
 
+#include "NCEditableTextBoxWidget.h"
 #include "NCGameState.h"
 #include "NCHUDWidget.h"
-#include "NCMessageBoxWidget.h"
 #include "NetworkChatting.h"
 #include "Net/UnrealNetwork.h"
 
@@ -46,6 +46,12 @@ void ANCPlayerController::SendNetworkMessage(const FString& MessageToSend)
 	
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
+}
+
+void ANCPlayerController::SendNetworkLoginMessage() const
+{
+	FText LoginMessage = FText::FromString(TEXT("Login"));
+	GetHUDWidget()->EditableTextBoxWidget->SendMessageOnEnter(LoginMessage, ETextCommit::OnEnter);
 }
 
 void ANCPlayerController::ServerRPCSendMessageToString_Implementation(const FString& ReceivedMessage)
@@ -104,6 +110,7 @@ void ANCPlayerController::BeginPlay()
 	if (IsLocalController())
 	{
 		InitWidget();
+		SendNetworkLoginMessage();
 	}
 	bShowMouseCursor = true;
 	
