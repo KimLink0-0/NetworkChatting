@@ -19,6 +19,7 @@ void ANCGameState::AddServerChatLog(const FString& NewChatMessage)
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 	
 	ServerChatLog.Add(NewChatMessage);
+	UpdateServerChatLog();
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
@@ -43,12 +44,8 @@ void ANCGameState::UpdateServerChatLog() const
 void ANCGameState::OnRep_ServerChatLog() const
 {
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Replicated ChatLog"));
+	UpdateServerChatLog();
 	
-	auto* PlayerController = Cast<ANCPlayerController>(GetWorld()->GetFirstPlayerController());
-	if (PlayerController)
-	{
-		PlayerController->ServerRPCRequestShowMessage();
-	}
 }
 
 void ANCGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -26,8 +26,6 @@ public:
 	void ServerRPCSendMessageToString(const FString& ReceivedMessage);
 	UFUNCTION(Server, Reliable)
 	void ServerRPCRequestShowMessage();
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPCShowReceivedMessage();
 
 	// Replication
 	UFUNCTION()

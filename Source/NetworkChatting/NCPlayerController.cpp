@@ -63,20 +63,7 @@ void ANCPlayerController::ServerRPCSendMessageToString_Implementation(const FStr
 
 void ANCPlayerController::ServerRPCRequestShowMessage_Implementation()
 {
-	MulticastRPCShowReceivedMessage();
-}
 
-void ANCPlayerController::MulticastRPCShowReceivedMessage_Implementation()
-{
-	auto NCGameState = Cast<ANCGameState>(GetWorld()->GetGameState());
-	if (NCGameState)
-	{
-		if (GetHUDWidget())
-		{
-			TArray<FString> ChatLog = NCGameState->GetServerChatLog();
-			GetHUDWidget()->MessageBoxWidget->UpdateChattingLog(ChatLog);
-		}
-	}
 }
 
 void ANCPlayerController::OnRep_CurrentName() const
@@ -112,8 +99,12 @@ void ANCPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 void ANCPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	InitWidget();
+
+	// 위젯 중복 생성 방지
+	if (IsLocalController())
+	{
+		InitWidget();
+	}
 	bShowMouseCursor = true;
 	
 }
