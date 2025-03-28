@@ -49,7 +49,6 @@ void UNCEditableTextBoxWidget::SendMessageOnClick()
 		PlayerController->SendNetworkMessage(MessageToSend);
 		ResetWittenMessage();
 	}
-
 }
 
 void UNCEditableTextBoxWidget::NativeConstruct()

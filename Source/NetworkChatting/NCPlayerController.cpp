@@ -5,6 +5,7 @@
 
 #include "NCGameState.h"
 #include "NCHUDWidget.h"
+#include "NCMessageBoxWidget.h"
 #include "NetworkChatting.h"
 #include "Net/UnrealNetwork.h"
 
@@ -30,10 +31,11 @@ void ANCPlayerController::SetUserName(const FString& NewUserName)
 	UserName = NewUserName;
 }
 
-UUserWidget* ANCPlayerController::GetHUDWidget() const
+UNCHUDWidget* ANCPlayerController::GetHUDWidget() const
 {
 	return HUDWidgetInstance;
 }
+
 
 void ANCPlayerController::SendNetworkMessage(const FString& MessageToSend)
 {
@@ -46,25 +48,36 @@ void ANCPlayerController::SendNetworkMessage(const FString& MessageToSend)
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
-void ANCPlayerController::HandleAddServerChatLog(const FString& MessageToSend) const
-{
-	auto* GameState = Cast<ANCGameState>(GetWorld()->GetGameState());
-	if (GameState)
-	{
-		GameState->AddServerChatLog(MessageToSend);
-		TArray<FString> ReceivedMessage = GameState->GetServerChatLog();
-	}
-}
-
 void ANCPlayerController::ServerRPCSendMessageToString_Implementation(const FString& ReceivedMessage)
 {
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
-	
-	HandleAddServerChatLog(ReceivedMessage);
+
+	auto* GameState = Cast<ANCGameState>(GetWorld()->GetGameState());
+	if (GameState)
+	{
+		GameState->AddServerChatLog(ReceivedMessage);
+	}
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
+void ANCPlayerController::ServerRPCRequestShowMessage_Implementation()
+{
+	MulticastRPCShowReceivedMessage();
+}
+
+void ANCPlayerController::MulticastRPCShowReceivedMessage_Implementation()
+{
+	auto NCGameState = Cast<ANCGameState>(GetWorld()->GetGameState());
+	if (NCGameState)
+	{
+		if (GetHUDWidget())
+		{
+			TArray<FString> ChatLog = NCGameState->GetServerChatLog();
+			GetHUDWidget()->MessageBoxWidget->UpdateChattingLog(ChatLog);
+		}
+	}
+}
 
 void ANCPlayerController::OnRep_CurrentName() const
 {
@@ -80,7 +93,7 @@ void ANCPlayerController::InitWidget()
 {
 	if (HUDWidgetClass)
 	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), HUDWidgetClass);
+		HUDWidgetInstance = CreateWidget<UNCHUDWidget>(GetWorld(), HUDWidgetClass);
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();

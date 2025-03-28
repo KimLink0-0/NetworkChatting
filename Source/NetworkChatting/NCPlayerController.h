@@ -6,9 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "NCPlayerController.generated.h"
 
-/**
- * 
- */
+class UNCHUDWidget;
+
 UCLASS()
 class NETWORKCHATTING_API ANCPlayerController : public APlayerController
 {
@@ -20,11 +19,15 @@ public:
 	// Getter Setter
 	FString GetUserName() const;
 	void SetUserName(const FString& NewUserName);
-	UUserWidget* GetHUDWidget() const;
+	UNCHUDWidget* GetHUDWidget() const;
 
 	// RPC 관련
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendMessageToString(const FString& ReceivedMessage);
+	UFUNCTION(Server, Reliable)
+	void ServerRPCRequestShowMessage();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPCShowReceivedMessage();
 
 	// Replication
 	UFUNCTION()
@@ -32,7 +35,6 @@ public:
 
 	//
 	void SendNetworkMessage(const FString& MessageToSend);
-	void HandleAddServerChatLog(const FString& MessageToSend) const;
 	
 protected:
 	// Widget 관련
@@ -40,7 +42,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 	UPROPERTY()
-	UUserWidget* HUDWidgetInstance;
+	UNCHUDWidget* HUDWidgetInstance;
 	
 	// Replication 관련
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentName, EditDefaultsOnly, BlueprintReadOnly, Category = "MessageState")

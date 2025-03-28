@@ -19,7 +19,6 @@ void ANCGameState::AddServerChatLog(const FString& NewChatMessage)
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
 	
 	ServerChatLog.Add(NewChatMessage);
-	UpdateServerChatLog();
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
@@ -31,15 +30,11 @@ void ANCGameState::UpdateServerChatLog() const
 	auto* PlayerContoller = Cast<ANCPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PlayerContoller)
 	{
-		auto* NCHUDWidget = Cast<UNCHUDWidget>(PlayerContoller->GetHUDWidget());
+		auto* NCHUDWidget = PlayerContoller->GetHUDWidget();
 		if (NCHUDWidget)
 		{
 			NCHUDWidget->MessageBoxWidget->UpdateChattingLog(ServerChatLog);
 		}	
-	}
-	else
-	{
-		NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Cast fail NCPlayerController"));
 	}
 
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
@@ -48,8 +43,12 @@ void ANCGameState::UpdateServerChatLog() const
 void ANCGameState::OnRep_ServerChatLog() const
 {
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Replicated ChatLog"));
-	UpdateServerChatLog();
 	
+	auto* PlayerController = Cast<ANCPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController)
+	{
+		PlayerController->ServerRPCRequestShowMessage();
+	}
 }
 
 void ANCGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
