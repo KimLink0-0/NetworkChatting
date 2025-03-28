@@ -110,8 +110,12 @@ void ANCPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 void ANCPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	InitWidget();
+
+	// 서버에서 위젯 중복 생성을 방지
+	if (IsLocalController())
+	{
+		InitWidget();	
+	}
 	bShowMouseCursor = true;
 	
 }
