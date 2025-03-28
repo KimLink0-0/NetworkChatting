@@ -3,8 +3,11 @@
 
 #include "NCGameState.h"
 
+#include "NCPlayerController.h"
 #include "Net/UnrealNetwork.h"
 #include "NetworkChatting.h"
+#include "NCHUDWidget.h"
+#include "NCMessageBoxWidget.h"
 
 TArray<FString> ANCGameState::GetServerChatLog() const
 {
@@ -17,6 +20,23 @@ void ANCGameState::AddServerChatLog(const FString& NewChatMessage)
 	
 	ServerChatLog.Add(NewChatMessage);
 	
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
+}
+
+void ANCGameState::UpdateServerChatLog() const
+{
+	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("Begin"));
+	
+	auto* PlayerContoller = Cast<ANCPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerContoller)
+	{
+		auto* NCHUDWidget = PlayerContoller->GetHUDWidget();
+		if (NCHUDWidget)
+		{
+			NCHUDWidget->MessageBoxWidget->UpdateChattingLog(ServerChatLog);
+		}	
+	}
+
 	NC_LOG(LogNetworkC, Log, TEXT("%s"), TEXT("End"));
 }
 
